@@ -1,0 +1,118 @@
+#Global variables that will be used
+board = ['A','B','C','D','E','F','G','H','I']
+restricted_num = []
+restricted_letter = []
+#The function responsible for visual representaion of the board at the beginning
+def display_board():
+    print ("------------")
+    print ("|", board[0],"|", board[1], "|", board[2], "|")
+    print ("------------")
+    print ("|", board[3],"|", board[4], "|", board[5], "|")
+    print ("------------")
+    print ("|", board[6],"|", board[7], "|", board[8], "|")
+    print ("------------")
+#The function responsible for choosing a cell to make a move, and making sure the cell is not already taken
+def get_player_position(player):
+    valid = False
+    print ("Please select a letter for the player who plays " + player)
+    while (not valid):
+     position = input()
+     if not position.isalpha() or len(position) != 1:
+         print("That's not a valid format! make sure you only chose A SINGLE LETTER")
+         continue
+     else:
+         valid = ord(position) >= 65 and ord(position) <= 73
+         if (valid):
+             if (position in restricted_letter):
+                 valid = False
+                 print("Please make sure to pick a cell that's not already taken!")
+             else:
+                 valid = True
+                 return position
+         else:
+             print("I can't find that on the table!, are you sure you chose an UPPERCASE letter showing on the table?")
+
+#The function responsible for the visual update after each move
+def update_game_board(position , player):
+    board[ord(position) - 65] = player
+    display_board()
+
+#The function responsible for the winning condition in the game
+def is_winner():
+    diagonal1 = (ord(board[0]) + ord(board[4]) + ord(board[8])) - 3 * ord('0') == 15
+    diagonal2 = (ord(board[2]) + ord(board[4]) + ord(board[6])) - 3 * ord('0') == 15
+    row1 = (ord(board[0]) + ord(board[1]) + ord(board[2])) - 3 * ord('0') == 15
+    row2 = (ord(board[3]) + ord(board[4]) + ord(board[5]))  - 3 * ord('0') == 15
+    row3 = (ord(board[6]) + ord(board[7]) + ord(board[8])) - 3 * ord('0') == 15
+    column1 = (ord(board[0])) + ord(board[3]) + ord(board[6]) - 3 * ord('0') == 15
+    column2 = (ord(board[1]) + ord(board[4]) + ord(board[7])) - 3 * ord('0') == 15
+    column3 = (ord(board[2]) + ord(board[5]) + ord(board[8])) - 3 * ord('0') == 15
+    return  diagonal1 or diagonal2 or row1 or row2 or row3 or column1 or column2 or column3
+
+#The function responsible for setting a value after picking a cell, and making sure it's a valid value
+def get_player_value(type):
+    print ("Select the number you'd like to set!")
+    if (type == "odd"):
+        valid = False
+        while(not valid):
+            value = input()
+            if (value.isdigit()):
+                if (int(value) >= 1 and int(value) <= 9 and int(value) % 2 != 0 and value not in restricted_num):
+                    valid = True
+                    restricted_num.append(value)
+                    return str(value)               
+                else:
+                    print ("You can't use that number! make sure you chose an unused odd number from 1 to 9")
+            else:
+                print("You can't pick letters or symbols here!")
+        
+        
+
+    if (type == "even"):
+        valid = False
+        while(not valid):
+            value = input()
+            if (value.isdigit()):
+                if (int(value) >= 0 and int(value) <= 8 and int(value) % 2 == 0 and value not in restricted_num):
+                    valid = True
+                    restricted_num.append(value)
+                    return str(value)
+                else:
+                    print ("You can't use that number! make sure you chose an unused even number from 0 to 8")
+            else:
+                print("You can't pick letters here!, we've already done that")
+
+
+
+
+
+#The main function which controls the game in different states
+def start_game():
+    display_board()
+    n_actions = 0
+    while (n_actions != 9):
+        position = get_player_position ("odd")
+        value = get_player_value("odd")
+        update_game_board (position , value)
+        restricted_letter.append(position)
+
+        if (is_winner()):
+            print ("Odd player wins!")
+            break
+        n_actions += 1
+        if (n_actions == 9):
+            break
+
+        position = get_player_position ("even")
+        value = get_player_value("even")
+        update_game_board (position , value)
+        restricted_letter.append(position)
+        if (is_winner()):
+            print ("Even player wins!")
+            break
+        n_actions += 1
+    if (not is_winner()):
+     print("Draw!")
+ 
+  
+start_game()
